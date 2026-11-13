@@ -26,7 +26,7 @@ export async function POST(request: Request) {
 
     await getStore().createReport(report);
 
-    return NextResponse.json({ id: report.id });
+    return NextResponse.json({ id: report.id, provider: report.provider.provider });
   } catch (error) {
     return errorResponse(error);
   }

@@ -1,26 +1,82 @@
 @import "tailwindcss";
 
 :root {
-  --background: #ffffff;
-  --foreground: #171717;
-}
-
-@theme inline {
-  --color-background: var(--background);
-  --color-foreground: var(--foreground);
-  --font-sans: var(--font-geist-sans);
-  --font-mono: var(--font-geist-mono);
+  --background: #f7f7fb;
+  --surface: #ffffff;
+  --surface-muted: #f1f0fa;
+  --foreground: #16152b;
+  --foreground-muted: #5c5a78;
+  --border: #e3e1f2;
+  --brand: #5b3df6;
+  --brand-strong: #4527e0;
+  --accent: #0ea5b7;
+  --danger: #dc3545;
+  --warn: #c2760c;
+  --good: #16a34a;
+  --focus-ring: #5b3df6;
 }
 
 @media (prefers-color-scheme: dark) {
   :root {
-    --background: #0a0a0a;
-    --foreground: #ededed;
+    --background: #0f0e1a;
+    --surface: #171527;
+    --surface-muted: #1d1b33;
+    --foreground: #f1f0fb;
+    --foreground-muted: #a6a3c4;
+    --border: #2b2847;
+    --brand: #8a74ff;
+    --brand-strong: #a594ff;
+    --accent: #38d9e8;
+    --danger: #ff6b76;
+    --warn: #f2b65c;
+    --good: #4ade80;
+    --focus-ring: #a594ff;
   }
+}
+
+@theme inline {
+  --color-background: var(--background);
+  --color-surface: var(--surface);
+  --color-surface-muted: var(--surface-muted);
+  --color-foreground: var(--foreground);
+  --color-foreground-muted: var(--foreground-muted);
+  --color-border: var(--border);
+  --color-brand: var(--brand);
+  --color-brand-strong: var(--brand-strong);
+  --color-accent: var(--accent);
+  --color-danger: var(--danger);
+  --color-warn: var(--warn);
+  --color-good: var(--good);
+  --font-sans: var(--font-geist-sans);
+  --font-mono: var(--font-geist-mono);
+}
+
+* {
+  border-color: var(--border);
 }
 
 body {
   background: var(--background);
   color: var(--foreground);
-  font-family: Arial, Helvetica, sans-serif;
+}
+
+:focus-visible {
+  outline: 2px solid var(--focus-ring);
+  outline-offset: 2px;
+  border-radius: 4px;
+}
+
+.radar-sweep {
+  background: radial-gradient(circle at 20% 20%, color-mix(in srgb, var(--brand) 22%, transparent), transparent 55%),
+    radial-gradient(circle at 80% 0%, color-mix(in srgb, var(--accent) 20%, transparent), transparent 50%);
+}
+
+@media print {
+  .no-print {
+    display: none !important;
+  }
+  body {
+    background: white;
+    color: black;
+  }
 }
