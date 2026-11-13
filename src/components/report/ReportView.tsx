@@ -4,6 +4,10 @@ import { useMemo, useState } from "react";
 import { HeadlineStats } from "./HeadlineStats";
 import { RiceTable } from "./RiceTable";
 import { ThemeDetail } from "./ThemeDetail";
+import { PrdPanel } from "./PrdPanel";
+import { ShareButton } from "./ShareButton";
+import { ExportPdfButton } from "./ExportPdfButton";
+import { FeedbackWidget } from "./FeedbackWidget";
 import {
   OneStarDriversChart,
   RatingDistributionChart,
@@ -53,11 +57,14 @@ export function ReportView({ report }: { report: Report }) {
     }
   }
 
-  async function handleGeneratePrd(themeId: string) {
+  async function handleGeneratePrd(themeId: string, regenerate = false) {
     setPrdError(null);
     setPrdLoadingThemeId(themeId);
     try {
-      const { prd } = await postJson<PrdApiResponse>(`/api/reports/${report.id}/prd`, { themeId });
+      const { prd } = await postJson<PrdApiResponse>(`/api/reports/${report.id}/prd`, {
+        themeId,
+        regenerate,
+      });
       setPrds((prev) => ({ ...prev, [themeId]: prd }));
       const theme = themes.find((t) => t.id === themeId);
       if (theme) trackPrdGenerated({ themeId, themeType: theme.type });
@@ -70,12 +77,18 @@ export function ReportView({ report }: { report: Report }) {
 
   return (
     <main className="mx-auto w-full max-w-6xl flex-1 px-4 py-8 sm:px-6">
-      <header className="mb-6">
-        <h1 className="text-2xl font-bold">{report.app.appName}</h1>
-        <p className="text-sm text-foreground-muted">
-          Analysed {new Date(report.createdAt).toLocaleString()} · provider: {report.provider.provider}
-          {report.isDemo && " · demo data"}
-        </p>
+      <header className="mb-6 flex flex-wrap items-start justify-between gap-3">
+        <div>
+          <h1 className="text-2xl font-bold">{report.app.appName}</h1>
+          <p className="text-sm text-foreground-muted">
+            Analysed {new Date(report.createdAt).toLocaleString()} · provider: {report.provider.provider}
+            {report.isDemo && " · demo data"}
+          </p>
+        </div>
+        <div className="no-print flex gap-2">
+          <ShareButton reportId={report.id} />
+          <ExportPdfButton reportId={report.id} />
+        </div>
       </header>
 
       <section className="mb-8">
@@ -113,15 +126,20 @@ export function ReportView({ report }: { report: Report }) {
           />
           {prdError && <p className="mt-2 text-sm text-danger">{prdError}</p>}
           {prds[selectedTheme.id] && (
-            <div className="mt-4 rounded-2xl border border-border bg-surface p-5">
-              <p className="mb-2 text-xs font-medium text-foreground-muted">
-                PRD (generated {new Date(prds[selectedTheme.id].generatedAt).toLocaleString()})
-              </p>
-              <pre className="whitespace-pre-wrap font-sans text-sm">{prds[selectedTheme.id].markdown}</pre>
+            <div className="mt-4">
+              <PrdPanel
+                prd={prds[selectedTheme.id]}
+                onRegenerate={() => handleGeneratePrd(selectedTheme.id, true)}
+                loading={prdLoadingThemeId === selectedTheme.id}
+              />
             </div>
           )}
         </section>
       )}
+
+      <section className="mt-8 max-w-sm">
+        <FeedbackWidget reportId={report.id} />
+      </section>
     </main>
   );
 }
