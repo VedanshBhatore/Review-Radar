@@ -23,21 +23,21 @@ const RULES: KeywordRule[] = [
   },
   {
     type: "delivery",
-    keywords: ["late delivery", "delivery was late", "delivery was very late", "delayed delivery", "delivery delay", "arrived late", "never arrived", "didn't arrive", "slow delivery", "out for delivery", "took forever to arrive", "past the slot", "hours late", "hours past"],
+    keywords: ["late delivery", "delivery was late", "delivery was very late", "delivery was delayed", "delayed delivery", "delivery delay", "arrived late", "never arrived", "didn't arrive", "slow delivery", "out for delivery", "took forever to arrive", "past the slot", "hours late", "hours past", "was delayed", "pushed back", "delivery slot"],
     name: "Delivery delays",
     description: "Reviewers describe late, delayed, or failed deliveries.",
     effort: 3,
   },
   {
     type: "pricing",
-    keywords: ["expensive", "price", "pricing", "overpriced", "too costly", "subscription", "hidden charge", "hidden fee", "surge"],
+    keywords: ["expensive", "price", "pricing", "overpriced", "too costly", "subscription", "hidden charge", "hidden fee", "hidden delivery charge", "surge"],
     name: "Pricing concerns",
     description: "Reviewers find pricing, fees, or subscription costs unreasonable.",
     effort: 2,
   },
   {
     type: "support",
-    keywords: ["customer service", "customer support", "no response", "refund", "support team", "helpline", "never responded"],
+    keywords: ["customer service", "customer support", "no response", "refund", "support team", "helpline", "never responded", "support chat", "unhelpful", "rude when i asked"],
     name: "Customer support issues",
     description: "Users describe unresponsive or unhelpful customer support, including refund problems.",
     effort: 2,
@@ -78,8 +78,11 @@ function classify(review: Review): ThemeType {
     if (rule.keywords.some((kw) => text.includes(kw))) return rule.type;
   }
   // Fall back to rating-driven classification so every review lands somewhere sensible.
+  // Deliberately does NOT guess a specific negative-feedback type (bug/quality/etc) for
+  // an unmatched low rating -- that would mislabel things like unmatched support/delivery
+  // complaints. "other" is the honest catch-all; only a clearly positive rating is confident
+  // enough to bucket without a keyword match.
   if (review.rating >= 4) return "praise";
-  if (review.rating <= 2) return "quality";
   return "other";
 }
 
