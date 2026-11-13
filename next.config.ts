@@ -7,6 +7,7 @@ const nextConfig: NextConfig = {
   // and the explicit force-dynamic model is far more predictable to build against without
   // local framework docs available. See DECISIONS.md.
   turbopack: {
+    root: __dirname,
     rules: {
       "*.css": {
         loaders: ["@tailwindcss/turbopack"],

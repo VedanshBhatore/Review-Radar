@@ -23,7 +23,7 @@ const RULES: KeywordRule[] = [
   },
   {
     type: "delivery",
-    keywords: ["late", "delivery", "delayed", "deliver", "shipping", "never arrived", "didn't arrive", "slow delivery", "out for delivery"],
+    keywords: ["late delivery", "delivery was late", "delivery was very late", "delayed delivery", "delivery delay", "arrived late", "never arrived", "didn't arrive", "slow delivery", "out for delivery", "took forever to arrive", "past the slot", "hours late", "hours past"],
     name: "Delivery delays",
     description: "Reviewers describe late, delayed, or failed deliveries.",
     effort: 3,

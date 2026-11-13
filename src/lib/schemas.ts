@@ -50,3 +50,86 @@ export const csvReviewRowSchema = z.object({
 });
 
 export type CsvReviewRow = z.infer<typeof csvReviewRowSchema>;
+
+// --- API request/response payloads --------------------------------------
+
+export const reviewSchema = z.object({
+  id: z.string().min(1),
+  text: z.string(),
+  rating: z.number().int().min(1).max(5),
+  date: z.string().min(1),
+  userName: z.string().optional(),
+});
+
+export const appMetaSchema = z.object({
+  appId: z.string().min(1),
+  appName: z.string().min(1),
+  icon: z.string().optional(),
+  developer: z.string().optional(),
+  score: z.number().optional(),
+});
+
+export const themeRationaleSchema = z.object({
+  impact: z.string(),
+  effort: z.string(),
+  merge: z.string().optional(),
+});
+
+export const themeSchema = z.object({
+  id: z.string().min(1),
+  name: z.string().min(1),
+  description: z.string().min(1),
+  type: themeTypeSchema,
+  sentiment: z.number().min(-1).max(1),
+  review_ids: z.array(z.string()),
+  representative_review_ids: z.array(z.string()),
+  reach: z.number().int().min(1).max(10),
+  impact: z.union([z.literal(1), z.literal(2), z.literal(3)]),
+  confidence: z.union([z.literal(50), z.literal(80), z.literal(100)]),
+  effort: z.number().min(1).max(5),
+  score: z.number(),
+  rationale: themeRationaleSchema,
+});
+
+export const reviewsRequestSchema = z.object({
+  input: z.string().min(1, "Enter a Play Store app ID or URL."),
+  force: z.boolean().optional(),
+});
+
+export const themeBatchRequestSchema = z.object({
+  reviews: z.array(reviewSchema).min(1),
+  appName: z.string().min(1),
+});
+
+export const themesMergeRequestSchema = z.object({
+  candidates: z.array(themeCandidateSchema).min(1),
+  reviews: z.array(reviewSchema).min(1),
+  appName: z.string().min(1),
+});
+
+export const createReportRequestSchema = z.object({
+  app: appMetaSchema,
+  reviews: z.array(reviewSchema).min(1),
+  themes: z.array(themeSchema),
+  isDemo: z.boolean().optional(),
+});
+
+export const generatePrdRequestSchema = z.object({
+  themeId: z.string().min(1),
+  regenerate: z.boolean().optional(),
+});
+
+export const feedbackRequestSchema = z.object({
+  reportId: z.string().min(1),
+  value: z.enum(["up", "down"]),
+  comment: z.string().max(2000).optional(),
+});
+
+export const riceUpdateRequestSchema = z
+  .object({
+    impact: z.union([z.literal(1), z.literal(2), z.literal(3)]).optional(),
+    effort: z.number().min(1).max(5).optional(),
+  })
+  .refine((v) => v.impact !== undefined || v.effort !== undefined, {
+    message: "Provide impact and/or effort to update.",
+  });
